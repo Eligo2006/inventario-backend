@@ -1,0 +1,9 @@
+package pe.cibertec.inventario.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import pe.cibertec.inventario.entity.Role;
+import java.util.Optional;
+
+public interface RoleRepository extends JpaRepository<Role, Long> {
+    Optional<Role> findByNombre(String nombre);
+}
