@@ -24,10 +24,11 @@ public class SecurityConfig {
     	http
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/login").permitAll()
-            .requestMatchers("/api/**").authenticated()
-            .anyRequest().authenticated()
-        )
+        	    .requestMatchers("/login", "/css/**", "/js/**", "/images/**").permitAll()
+        	    .requestMatchers("/api/auth/login", "/api/auth/logout").permitAll()
+        	    .requestMatchers("/api/**").authenticated()
+        	    .anyRequest().authenticated()
+        	)
         .formLogin(form -> form
             .loginPage("/login")
             .defaultSuccessUrl("/productos", true)
