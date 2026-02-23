@@ -7,28 +7,70 @@
 
 <div class="container py-4">
 
+  <!-- ALERTAS -->
   <div th:if="${param.movOk}" class="alert alert-success shadow-sm">
     <strong>Listo:</strong> Movimiento registrado. El stock fue actualizado.
   </div>
 
+  <div th:if="${param.toggled}" class="alert alert-info shadow-sm">
+    Estado del producto actualizado correctamente.
+  </div>
+
+  <!-- HEADER -->
   <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
     <div>
       <h2 class="page-title fw-bold mb-1">Listado de Productos</h2>
-      <div class="text-muted-2 small">Gestión de productos del inventario (CRUD) y control por stock.</div>
+      <div class="text-muted-2 small">
+        Gestión de productos del inventario (CRUD) y control por stock.
+      </div>
+
+      <!-- FILTROS -->
+      <div class="d-flex gap-2 flex-wrap mt-3">
+        <a class="btn btn-outline-light btn-sm"
+           th:classappend="${estado == 'activos'} ? ' active fw-bold' : ''"
+           th:href="@{/productos(estado='activos')}">
+          Activos
+        </a>
+
+        <a class="btn btn-outline-light btn-sm"
+           th:classappend="${estado == 'inactivos'} ? ' active fw-bold' : ''"
+           th:href="@{/productos(estado='inactivos')}">
+          Inactivos
+        </a>
+
+        <a class="btn btn-outline-light btn-sm"
+           th:classappend="${estado == 'todos'} ? ' active fw-bold' : ''"
+           th:href="@{/productos(estado='todos')}">
+          Todos
+        </a>
+      </div>
     </div>
 
     <div class="d-flex gap-2 flex-wrap">
-      <a class="btn btn-outline-light" th:href="@{/api/reportes/productos.csv}">Exportar CSV</a>
-      <a class="btn btn-outline-light" th:href="@{/api/reportes/productos.pdf}">Exportar PDF</a>
-      <a class="btn btn-primary" th:href="@{/productos/nuevo}">+ Nuevo producto</a>
+      <a class="btn btn-outline-light"
+         th:href="@{/api/reportes/productos.csv}">
+        Exportar CSV
+      </a>
+
+      <a class="btn btn-outline-light"
+         th:href="@{/api/reportes/productos.pdf}">
+        Exportar PDF
+      </a>
+
+      <a class="btn btn-primary"
+         th:href="@{/productos/nuevo}">
+        + Nuevo producto
+      </a>
     </div>
   </div>
 
+  <!-- TABLA -->
   <div class="card card-glass">
     <div class="card-body">
 
-		<div class="table-responsive table-pro">
-		  <table class="table table-dark table-hover align-middle">
+      <div class="table-responsive table-pro">
+        <table class="table table-dark table-hover align-middle">
+
           <thead>
           <tr class="text-muted-2">
             <th style="width:70px;">#</th>
@@ -37,37 +79,71 @@
             <th>Precio</th>
             <th>Stock</th>
             <th>Estado</th>
-            <th class="text-center" style="width:200px;">Acciones</th>
+            <th class="text-center" style="width:240px;">Acciones</th>
           </tr>
           </thead>
 
           <tbody>
-          <tr th:each="p, iter : ${productos}">
-            <td th:text="${iter.index + 1}"></td>
-            <td th:text="${p.id}"></td>
-            <td class="fw-semibold" th:text="${p.nombre}"></td>
+          <tr th:each="p, iter : ${productos}"
+              th:classappend="${!p.estado and estado == 'todos'} ? 'opacity-50' : ''">
 
-            <td>S/ <span th:text="${#numbers.formatDecimal(p.precio,1,2)}"></span></td>
+            <td th:text="${iter.index + 1}"></td>
+
+            <td th:text="${p.id}"></td>
+
+            <td class="fw-semibold"
+                th:text="${p.nombre}"></td>
 
             <td>
-              <span th:class="${p.stock <= 5} ? 'badge-soft badge-soft-warning' : 'badge-soft badge-soft-info'"
-                    th:text="${p.stock}"></span>
-              <span class="text-muted-2 small ms-1" th:if="${p.stock <= 5}">(bajo)</span>
+              S/
+              <span th:text="${#numbers.formatDecimal(p.precio,1,2)}"></span>
             </td>
 
             <td>
-              <span th:class="${p.estado} ? 'badge-soft badge-soft-success' : 'badge-soft badge-soft-danger'"
-                    th:text="${p.estado} ? 'Activo' : 'Inactivo'"></span>
+              <span th:class="${p.stock <= 5} ?
+                               'badge-soft badge-soft-warning' :
+                               'badge-soft badge-soft-info'"
+                    th:text="${p.stock}">
+              </span>
+
+              <span class="text-muted-2 small ms-1"
+                    th:if="${p.stock <= 5}">
+                (bajo)
+              </span>
+            </td>
+
+            <td>
+              <span th:class="${p.estado} ?
+                               'badge-soft badge-soft-success' :
+                               'badge-soft badge-soft-danger'"
+                    th:text="${p.estado} ? 'Activo' : 'Inactivo'">
+              </span>
             </td>
 
             <td class="text-center">
               <div class="btn-group btn-group-sm" role="group">
-                <a class="btn btn-warning" th:href="@{'/productos/editar/' + ${p.id}}">Editar</a>
-                <a class="btn btn-danger"
-                   th:href="@{'/productos/eliminar/' + ${p.id}}"
-                   onclick="return confirm('¿Seguro que deseas eliminar este producto?')">Eliminar</a>
+
+                <!-- EDITAR -->
+                <a class="btn btn-warning"
+                   th:href="@{'/productos/editar/' + ${p.id}}">
+                  Editar
+                </a>
+
+                <!-- ACTIVAR / DESACTIVAR -->
+                <a class="btn"
+                   th:classappend="${p.estado} ?
+                                    ' btn-danger' :
+                                    ' btn-success'"
+                   th:href="@{'/productos/toggle/' + ${p.id} + '?estado=' + ${estado}}"
+                   th:onclick="${p.estado} ?
+                     'return confirm(\'¿Desactivar este producto?\')' :
+                     'return confirm(\'¿Activar este producto?\')'}"
+                   th:text="${p.estado} ? 'Desactivar' : 'Activar'">
+                </a>
+
               </div>
             </td>
+
           </tr>
 
           <tr th:if="${#lists.isEmpty(productos)}">
@@ -75,7 +151,9 @@
               No hay productos registrados.
             </td>
           </tr>
+
           </tbody>
+
         </table>
       </div>
 
@@ -83,5 +161,6 @@
   </div>
 
 </div>
+
 </body>
 </html>

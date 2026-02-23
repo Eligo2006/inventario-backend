@@ -43,6 +43,11 @@ public class MovimientoService {
         Producto producto = productoRepository.findById(dto.getProductoId())
                 .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado"));
 
+        // ✅ AQUÍ VA
+        if (producto.getEstado() == null || !producto.getEstado()) {
+            throw new IllegalStateException("Producto inactivo");
+        }
+
         Usuario usuario = usuarioRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
 
@@ -54,7 +59,6 @@ public class MovimientoService {
 
         Movimiento saved = movimientoRepository.save(m);
 
-        // 🔥 LIMPIA EL CONTEXTO PARA EVITAR CACHE
         entityManager.flush();
         entityManager.clear();
 

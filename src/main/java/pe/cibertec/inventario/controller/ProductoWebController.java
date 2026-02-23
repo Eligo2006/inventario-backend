@@ -18,9 +18,30 @@ public class ProductoWebController {
     private final ProductoRepository repo;
 
     @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("productos", repo.findAll());
+    public String listar(@RequestParam(name = "estado", required = false, defaultValue = "activos") String estado,
+                         Model model) {
+
+        if ("inactivos".equalsIgnoreCase(estado)) {
+            model.addAttribute("productos", repo.findByEstadoFalse());
+        } else if ("todos".equalsIgnoreCase(estado)) {
+            model.addAttribute("productos", repo.findAll());
+        } else {
+            model.addAttribute("productos", repo.findByEstadoTrue());
+        }
+
+        model.addAttribute("estado", estado.toLowerCase());
         return "productos/lista";
+    }
+    
+    @GetMapping("/toggle/{id}")
+    public String toggle(@PathVariable Long id,
+                         @RequestParam(name = "estado", required = false, defaultValue = "activos") String estado) {
+
+        Producto p = repo.findById(id).orElseThrow();
+        p.setEstado(p.getEstado() == null ? true : !p.getEstado());
+        repo.save(p);
+
+        return "redirect:/productos?estado=" + estado + "&toggled";
     }
 
     @GetMapping("/nuevo")
@@ -51,7 +72,9 @@ public class ProductoWebController {
 
     @GetMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id) {
-        repo.deleteById(id);
-        return "redirect:/productos";
+        Producto p = repo.findById(id).orElseThrow();
+        p.setEstado(false);
+        repo.save(p);
+        return "redirect:/productos?deleted";
     }
 }

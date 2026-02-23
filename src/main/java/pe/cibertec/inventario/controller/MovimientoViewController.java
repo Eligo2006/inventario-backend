@@ -31,7 +31,7 @@ public class MovimientoViewController {
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
         model.addAttribute("dto", new MovimientoCreateDto());
-        model.addAttribute("productos", productoRepository.findAll());
+        model.addAttribute("productos", productoRepository.findByEstadoTrue());
         return "movimientos/nuevo";
     }
 
@@ -42,7 +42,7 @@ public class MovimientoViewController {
                             Authentication auth) {
 
         if (br.hasErrors()) {
-            model.addAttribute("productos", productoRepository.findAll());
+        	model.addAttribute("productos", productoRepository.findByEstadoTrue());
             return "movimientos/nuevo";
         }
 
@@ -51,10 +51,16 @@ public class MovimientoViewController {
             return "redirect:/productos?movOk";
         } catch (Exception ex) {
 
-            model.addAttribute("productos", productoRepository.findAll());
+        	model.addAttribute("productos", productoRepository.findByEstadoTrue());
 
             String mensajeUsuario = "Ocurrió un error al registrar el movimiento.";
+            
+            String msg = ex.getMessage();
+            if (msg != null && msg.contains("Producto inactivo")) {
+                mensajeUsuario = "No se pueden registrar movimientos en un producto inactivo.";
+            }
 
+         // Errores de la BD (trigger)
             if (ex.getCause() != null && ex.getCause().getCause() != null) {
                 String mensajeBD = ex.getCause().getCause().getMessage();
 
