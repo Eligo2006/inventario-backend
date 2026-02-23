@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
+
 import pe.cibertec.inventario.entity.Producto;
 import pe.cibertec.inventario.repository.ProductoRepository;
 
@@ -26,7 +28,7 @@ public class ProductoController {
     }
 
     @PostMapping
-    public ResponseEntity<Producto> crear(@RequestBody Producto p){
+	public ResponseEntity<Producto> crear(@Valid @RequestBody Producto p){
         Producto guardado = repo.save(p);
         return ResponseEntity.status(HttpStatus.CREATED).body(guardado);
     }
@@ -39,7 +41,7 @@ public class ProductoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Producto> actualizar(@PathVariable Long id, @RequestBody Producto p){
+	public ResponseEntity<Producto> actualizar(@PathVariable Long id, @Valid @RequestBody Producto p){
         return repo.findById(id).map(existing -> {
             existing.setNombre(p.getNombre());
             existing.setDescripcion(p.getDescripcion());

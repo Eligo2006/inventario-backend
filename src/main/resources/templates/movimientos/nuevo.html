@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Registrar Movimiento</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div>
+      <h1>Registrar Movimiento</h1>
+      <div class="small">ENTRADA suma stock, SALIDA resta stock (validado por trigger en PostgreSQL).</div>
+    </div>
+    <div class="nav">
+      <a class="btn secondary" th:href="@{/movimientos}">Volver</a>
+    </div>
+  </div>
+
+  <div th:if="${error}" class="alert err" th:text="${error}"></div>
+
+  <div class="card">
+    <form th:action="@{/movimientos}" th:object="${dto}" method="post">
+      <div class="grid">
+        <div>
+          <label>Tipo</label>
+          <select th:field="*{tipo}">
+            <option value="">-- Selecciona --</option>
+            <option value="ENTRADA">ENTRADA</option>
+            <option value="SALIDA">SALIDA</option>
+          </select>
+          <div class="small" th:if="${#fields.hasErrors('tipo')}" th:errors="*{tipo}"></div>
+        </div>
+
+        <div>
+          <label>Producto</label>
+          <select th:field="*{productoId}">
+            <option value="">-- Selecciona --</option>
+            <option th:each="p : ${productos}" th:value="${p.id}" th:text="${p.nombre}"></option>
+          </select>
+          <div class="small" th:if="${#fields.hasErrors('productoId')}" th:errors="*{productoId}"></div>
+        </div>
+
+        <div>
+          <label>Cantidad</label>
+          <input type="number" min="1" th:field="*{cantidad}" placeholder="Ej: 5"/>
+          <div class="small" th:if="${#fields.hasErrors('cantidad')}" th:errors="*{cantidad}"></div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px; display:flex; gap:10px;">
+        <button class="btn" type="submit">Guardar</button>
+        <a class="btn secondary" th:href="@{/movimientos}">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>

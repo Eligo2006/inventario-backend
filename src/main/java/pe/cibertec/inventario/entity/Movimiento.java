@@ -6,27 +6,78 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "movimientos")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Movimiento {
 
-    @Id
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String tipo; // ENTRADA o SALIDA
-
+    @Column(nullable = false)
     private Integer cantidad;
 
-    private LocalDateTime fecha = LocalDateTime.now();
+    @Column(nullable = false)
+    private LocalDateTime fecha;
 
-    @ManyToOne
-    @JoinColumn(name = "producto_id")
+    @Column(nullable = false)
+    private String tipo; // ENTRADA / SALIDA
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "producto_id", nullable = false)
     private Producto producto;
 
-    @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
+
+    @PrePersist
+    public void prePersist() {
+        if (fecha == null) fecha = LocalDateTime.now();
+    }
+
+	public Long getId() {
+		return id;
+	}
+
+	public Integer getCantidad() {
+		return cantidad;
+	}
+
+	public void setCantidad(Integer cantidad) {
+		this.cantidad = cantidad;
+	}
+
+	public LocalDateTime getFecha() {
+		return fecha;
+	}
+
+	public void setFecha(LocalDateTime fecha) {
+		this.fecha = fecha;
+	}
+
+	public String getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
+
+	public Producto getProducto() {
+		return producto;
+	}
+
+	public void setProducto(Producto producto) {
+		this.producto = producto;
+	}
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+    
+    
+    
 }

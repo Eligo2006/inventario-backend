@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Movimientos</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div>
+      <h1>Movimientos</h1>
+      <div class="small">Kardex básico (ENTRADA / SALIDA). El stock se actualiza en la BD.</div>
+    </div>
+    <div class="nav">
+      <a class="btn secondary" th:href="@{/productos}">Productos</a>
+      <a class="btn" th:href="@{/movimientos/nuevo}">Registrar Movimiento</a>
+    </div>
+  </div>
+
+  <div th:if="${param.ok}" class="alert ok">Movimiento registrado correctamente.</div>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Fecha</th>
+          <th>Tipo</th>
+          <th>Cantidad</th>
+          <th>Producto</th>
+          <th>Usuario</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="m : ${movimientos}">
+          <td th:text="${m.id}"></td>
+          <td th:text="${#temporals.format(m.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+          <td th:text="${m.tipo}"></td>
+          <td th:text="${m.cantidad}"></td>
+          <td th:text="${m.producto.nombre}"></td>
+          <td th:text="${m.usuario.username}"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>
