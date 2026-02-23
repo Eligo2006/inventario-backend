@@ -1,59 +1,66 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8"/>
-  <title>Registrar Movimiento</title>
-  <link rel="stylesheet" th:href="@{/css/app.css}">
-</head>
+<head th:replace="fragments/layout :: head('Registrar movimiento - Inventario')"></head>
 <body>
-<div class="container">
-  <div class="header">
+
+<nav th:replace="fragments/layout :: navbar('movimientos')"></nav>
+
+<div class="container py-4">
+
+  <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
     <div>
-      <h1>Registrar Movimiento</h1>
-      <div class="small">ENTRADA suma stock, SALIDA resta stock (validado por trigger en PostgreSQL).</div>
+      <h2 class="page-title fw-bold mb-1">Registrar Movimiento</h2>
+      <div class="text-muted-2 small">ENTRADA suma stock, SALIDA resta stock. Si no hay stock, se bloquea con mensaje.</div>
     </div>
-    <div class="nav">
-      <a class="btn secondary" th:href="@{/movimientos}">Volver</a>
+    <a class="btn btn-outline-light" th:href="@{/movimientos}">Volver</a>
+  </div>
+
+  <div th:if="${error}" class="alert alert-danger shadow-sm">
+    <strong>Error:</strong> <span th:text="${error}"></span>
+  </div>
+
+  <div class="card card-glass">
+    <div class="card-body">
+
+      <form th:action="@{/movimientos}" th:object="${dto}" method="post">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label text-muted-2">Tipo</label>
+            <select class="form-select" th:field="*{tipo}">
+              <option value="">-- Selecciona --</option>
+              <option value="ENTRADA">ENTRADA</option>
+              <option value="SALIDA">SALIDA</option>
+            </select>
+            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('tipo')}" th:errors="*{tipo}"></div>
+          </div>
+
+          <div class="col-md-5">
+            <label class="form-label text-muted-2">Producto</label>
+            <select class="form-select" th:field="*{productoId}">
+              <option value="">-- Selecciona --</option>
+              <option th:each="p : ${productos}" th:value="${p.id}" th:text="${p.nombre}"></option>
+            </select>
+            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('productoId')}" th:errors="*{productoId}"></div>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label text-muted-2">Cantidad</label>
+            <input class="form-control" type="number" min="1" th:field="*{cantidad}" placeholder="Ej: 5">
+            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('cantidad')}" th:errors="*{cantidad}"></div>
+          </div>
+        </div>
+
+        <hr class="my-4">
+
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary" type="submit">Guardar</button>
+          <a class="btn btn-outline-light" th:href="@{/movimientos}">Cancelar</a>
+        </div>
+      </form>
+
     </div>
   </div>
 
-  <div th:if="${error}" class="alert err" th:text="${error}"></div>
-
-  <div class="card">
-    <form th:action="@{/movimientos}" th:object="${dto}" method="post">
-      <div class="grid">
-        <div>
-          <label>Tipo</label>
-          <select th:field="*{tipo}">
-            <option value="">-- Selecciona --</option>
-            <option value="ENTRADA">ENTRADA</option>
-            <option value="SALIDA">SALIDA</option>
-          </select>
-          <div class="small" th:if="${#fields.hasErrors('tipo')}" th:errors="*{tipo}"></div>
-        </div>
-
-        <div>
-          <label>Producto</label>
-          <select th:field="*{productoId}">
-            <option value="">-- Selecciona --</option>
-            <option th:each="p : ${productos}" th:value="${p.id}" th:text="${p.nombre}"></option>
-          </select>
-          <div class="small" th:if="${#fields.hasErrors('productoId')}" th:errors="*{productoId}"></div>
-        </div>
-
-        <div>
-          <label>Cantidad</label>
-          <input type="number" min="1" th:field="*{cantidad}" placeholder="Ej: 5"/>
-          <div class="small" th:if="${#fields.hasErrors('cantidad')}" th:errors="*{cantidad}"></div>
-        </div>
-      </div>
-
-      <div style="margin-top:14px; display:flex; gap:10px;">
-        <button class="btn" type="submit">Guardar</button>
-        <a class="btn secondary" th:href="@{/movimientos}">Cancelar</a>
-      </div>
-    </form>
-  </div>
 </div>
 </body>
 </html>

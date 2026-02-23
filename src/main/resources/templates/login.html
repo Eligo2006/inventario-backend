@@ -1,45 +1,79 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Login - Inventario</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Iniciar sesión - Inventario</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link th:href="@{/css/app.css}" rel="stylesheet">
 </head>
-<body class="bg-dark d-flex justify-content-center align-items-center vh-100">
 
-<div class="card shadow-lg" style="width: 380px;">
-    <div class="card-body p-4">
+<body class="min-vh-100 d-flex align-items-center">
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-7 col-lg-5">
+      <div class="card card-glass">
+        <div class="card-body p-4 p-md-5">
 
-        <h3 class="text-center mb-4">Inventario</h3>
+          <div class="mb-4">
+            <h2 class="fw-bold mb-1 text-white">Sistema de Inventario</h2>
+            <div class="text-muted-2 small">Ingresa con tu usuario y contraseña.</div>
+          </div>
 
-        <div th:if="${param.error}" class="alert alert-danger text-center">
-            Usuario o contraseña incorrectos
-        </div>
+          <!-- Mensaje si credenciales inválidas -->
+          <div th:if="${param.error}" class="alert alert-danger shadow-sm">
+            Usuario o contraseña incorrectos.
+          </div>
 
-        <div th:if="${param.logout}" class="alert alert-success text-center">
-            Sesión cerrada correctamente
-        </div>
+          <!-- Mensaje si cerró sesión -->
+          <div th:if="${param.logout}" class="alert alert-success shadow-sm">
+            Sesión cerrada correctamente.
+          </div>
 
-        <form th:action="@{/login}" method="post">
-
+          <form th:action="@{/login}" method="post" class="needs-validation" novalidate>
             <div class="mb-3">
-                <label class="form-label">Usuario</label>
-                <input type="text" name="username" class="form-control" required>
+              <label class="form-label text-muted-2">Usuario</label>
+              <input name="username" class="form-control" placeholder="Ej: admin" required>
+              <div class="invalid-feedback">Ingresa tu usuario.</div>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Contraseña</label>
-                <input type="password" name="password" class="form-control" required>
+              <label class="form-label text-muted-2">Contraseña</label>
+              <input name="password" type="password" class="form-control" placeholder="••••••••" required>
+              <div class="invalid-feedback">Ingresa tu contraseña.</div>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">
-                Iniciar Sesión
+            <button class="btn btn-primary w-100 py-2" type="submit">
+              Iniciar sesión
             </button>
 
-        </form>
+            <div class="mt-3 text-center text-muted-2 small">
+              © <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}"></span> Inventario
+            </div>
+          </form>
 
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
+<script>
+  // Validación Bootstrap simple (opcional)
+  (() => {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+</script>
 </body>
 </html>

@@ -30,7 +30,14 @@ public class ProductoWebController {
     }
 
     @PostMapping("/guardar")
-    public String guardar(@Valid @ModelAttribute Producto producto, BindingResult result) {
+    public String guardar(@Valid @ModelAttribute("producto") Producto producto,
+                          BindingResult result,
+                          Model model) {
+
+        if (result.hasErrors()) {
+            return "productos/formulario";
+        }
+
         repo.save(producto);
         return "redirect:/productos";
     }

@@ -1,49 +1,63 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8"/>
-  <title>Movimientos</title>
-  <link rel="stylesheet" th:href="@{/css/app.css}">
-</head>
+<head th:replace="fragments/layout :: head('Movimientos - Inventario')"></head>
 <body>
-<div class="container">
-  <div class="header">
+
+<nav th:replace="fragments/layout :: navbar('movimientos')"></nav>
+
+<div class="container py-4">
+
+  <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
     <div>
-      <h1>Movimientos</h1>
-      <div class="small">Kardex básico (ENTRADA / SALIDA). El stock se actualiza en la BD.</div>
+      <h2 class="page-title fw-bold mb-1">Movimientos</h2>
+      <div class="text-muted-2 small">Kardex básico: ENTRADA suma stock, SALIDA resta stock (validado en PostgreSQL).</div>
     </div>
-    <div class="nav">
-      <a class="btn secondary" th:href="@{/productos}">Productos</a>
-      <a class="btn" th:href="@{/movimientos/nuevo}">Registrar Movimiento</a>
+
+    <div class="d-flex gap-2">
+      <a class="btn btn-primary" th:href="@{/movimientos/nuevo}">+ Registrar movimiento</a>
     </div>
   </div>
 
-  <div th:if="${param.ok}" class="alert ok">Movimiento registrado correctamente.</div>
-
-  <div class="card">
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Fecha</th>
-          <th>Tipo</th>
-          <th>Cantidad</th>
-          <th>Producto</th>
-          <th>Usuario</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr th:each="m : ${movimientos}">
-          <td th:text="${m.id}"></td>
-          <td th:text="${#temporals.format(m.fecha, 'dd/MM/yyyy HH:mm')}"></td>
-          <td th:text="${m.tipo}"></td>
-          <td th:text="${m.cantidad}"></td>
-          <td th:text="${m.producto.nombre}"></td>
-          <td th:text="${m.usuario.username}"></td>
-        </tr>
-      </tbody>
-    </table>
+  <div th:if="${param.ok}" class="alert alert-success shadow-sm">
+    Movimiento registrado correctamente.
   </div>
+
+  <div class="card card-glass">
+    <div class="card-body">
+		<div class="table-responsive table-pro">
+		  <table class="table table-dark table-hover align-middle">
+          <thead>
+          <tr class="text-muted-2">
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th>Cantidad</th>
+            <th>Producto</th>
+            <th>Usuario</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="m : ${movimientos}">
+            <td th:text="${m.id}"></td>
+            <td th:text="${#temporals.format(m.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+            <td>
+              <span th:class="${m.tipo == 'ENTRADA'} ? 'badge-soft badge-soft-success' : 'badge-soft badge-soft-danger'"
+                    th:text="${m.tipo}"></span>
+            </td>
+            <td th:text="${m.cantidad}"></td>
+            <td th:text="${m.producto.nombre}"></td>
+            <td th:text="${m.usuario.username}"></td>
+          </tr>
+
+          <tr th:if="${#lists.isEmpty(movimientos)}">
+            <td colspan="6" class="text-center text-muted-2 py-4">No hay movimientos registrados.</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
 </div>
 </body>
 </html>
